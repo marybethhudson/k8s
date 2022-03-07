@@ -24,3 +24,21 @@ spec:
             operator: In
             values:
             - t3.large
+      podAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: cache
+              operator: In
+              values:
+              - redis
+          topologyKey: topology.kubernetes.io/zone
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - spring-music
+          topologyKey: topology.kubernetes.io/zone            
