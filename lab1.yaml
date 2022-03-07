@@ -7,7 +7,7 @@ spec:
   - name: app1
     image: supergiantkir/animals:bear
     volumeMounts:
-    - name: redis-persistent-storage
+    - name: app-storage
       mountPath: /data/redis
   - name: app2
     image: yanivomc/spring-music:latest
