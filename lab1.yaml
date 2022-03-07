@@ -8,7 +8,7 @@ spec:
     image: supergiantkir/animals:bear
     volumeMounts:
     - name: app-storage
-      mountPath: /data/redis
+      mountPath: /storage
   - name: app2
     image: yanivomc/spring-music:latest
     volumeMounts:
