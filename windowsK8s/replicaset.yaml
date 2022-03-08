@@ -27,6 +27,7 @@ spec:
                 operator: In
                 values:
                 - redis
+            topologyKey: mytopology
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -35,6 +36,7 @@ spec:
                 operator: In
                 values:
                 - spring-music
+            topologyKey: mytopology
             
 ---
 
