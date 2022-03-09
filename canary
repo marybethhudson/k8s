@@ -21,9 +21,7 @@ spec:
       containers:
         - name: springmusic
           image: "supergiantkir/animals:bear"
-
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,7 +45,6 @@ spec:
       containers:
         - name: springmusic
           image: "supergiantkir/animals:moose"
-  
 ---
 apiVersion: v1
 kind: Service      # Create new service 
