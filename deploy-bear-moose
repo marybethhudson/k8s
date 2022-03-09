@@ -61,7 +61,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spring-pod-affinity
+  name: spring-pod-affinity2
   labels:
     app: spring-music
     tier: frontend
@@ -147,4 +147,16 @@ spec:
   containers:
   - name: redis
     image: redis:latest
-            
+---
+kind: Service 
+apiVersion: v1 
+metadata:
+  name: hudson-srv
+spec:
+  type: LoadBalancer
+  selector:
+    app: spring-music 
+  ports:    
+    - protocol: TCP
+      port: 80
+      targetPort: 80
