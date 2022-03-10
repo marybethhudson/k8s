@@ -65,24 +65,6 @@ metadata:
   labels:
     cache: redis
 spec:
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: topology.kubernetes.io/zone
-            operator: In
-            values:
-            - eu-west-1b
-            - eu-west-1c
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 1
-        preference:
-          matchExpressions:
-          - key: node.kubernetes.io/instance-type
-            operator: In
-            values:
-            - t3.large
   containers:
   - name: redis
     image: redis:latest
