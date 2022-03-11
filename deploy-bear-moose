@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spring-pod-affinity
+  name: deploy-bear-recreate
   labels:
     app: spring-music
     tier: frontend
@@ -61,7 +61,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spring-pod-affinity2
+  name: deploy-moose-recreate
   labels:
     app: spring-music
     tier: frontend
