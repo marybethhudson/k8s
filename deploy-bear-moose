@@ -3,10 +3,9 @@ kind: Deployment
 metadata:
   name: deploy-bear-recreate
   labels:
-    app: spring-music
-    tier: frontend
+    app: spring-bear
 spec:
-  replicas: 5
+  replicas: 2
   strategy:
     type: Recreate
   selector:  
@@ -16,46 +15,11 @@ spec:
     metadata:
       labels:
         app: spring-music
+        type: animal
     spec:
       containers:
         - name: springmusic
           image: "supergiantkir/animals:bear"
-      #affinity:
-        #nodeAffinity:
-          #requiredDuringSchedulingIgnoredDuringExecution:
-            #nodeSelectorTerms:
-            #- matchExpressions:
-              #- key: topology.kubernetes.io/zone
-                #operator: In
-                #values:
-                #- eu-west-1b
-                #- eu-west-1c
-          #preferredDuringSchedulingIgnoredDuringExecution:
-          #- weight: 1
-           #preference:
-              #matchExpressions:
-              #- key: node.kubernetes.io/instance-type
-                #operator: In
-                #values:
-                #- t3.large
-        #podAffinity:
-          #requiredDuringSchedulingIgnoredDuringExecution:
-          #- labelSelector:
-              #matchExpressions:
-              #- key: cache
-                #operator: In
-                #values:
-                #- redis
-            #topologyKey: topology.kubernetes.io/zone
-        #podAntiAffinity:
-          #requiredDuringSchedulingIgnoredDuringExecution:
-          #- labelSelector:
-              #matchExpressions:
-              #- key: app
-                #operator: In
-               # values:
-                #- spring-music
-            #topologyKey: topology.kubernetes.io/zone
 ---
 
 apiVersion: apps/v1
@@ -63,8 +27,7 @@ kind: Deployment
 metadata:
   name: deploy-moose-recreate
   labels:
-    app: spring-music
-    tier: frontend
+    app: spring-moose
 spec:
   replicas: 1
   strategy:
@@ -76,77 +39,12 @@ spec:
     metadata:
       labels:
         app: spring-music
+        type: animal
     spec:
       containers:
         - name: springmusic
           image: "supergiantkir/animals:moose"
-      # affinity:
-      #   nodeAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #       nodeSelectorTerms:
-      #       - matchExpressions:
-      #         - key: topology.kubernetes.io/zone
-      #           operator: In
-      #           values:
-      #           - eu-west-1b
-      #           - eu-west-1c
-      #     preferredDuringSchedulingIgnoredDuringExecution:
-      #     - weight: 1
-      #      preference:
-      #         matchExpressions:
-      #         - key: node.kubernetes.io/instance-type
-      #           operator: In
-      #           values:
-      #           - t3.large
-      #   podAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #     - labelSelector:
-      #         matchExpressions:
-      #         - key: cache
-      #           operator: In
-      #           values:
-      #           - redis
-      #       topologyKey: topology.kubernetes.io/zone
-      #   podAntiAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #     - labelSelector:
-      #         matchExpressions:
-      #         - key: app
-      #           operator: In
-      #          values:
-      #           - spring-music
-      #       topologyKey: topology.kubernetes.io/zone
----
 
-
-apiVersion: v1
-kind: Pod
-metadata:
-  name: redis-cache
-  labels:
-    cache: redis
-spec:
-  # affinity:
-  #   nodeAffinity:
-  #     requiredDuringSchedulingIgnoredDuringExecution:
-  #       nodeSelectorTerms:
-  #       - matchExpressions:
-  #         - key: topology.kubernetes.io/zone
-  #           operator: In
-  #           values:
-  #           - eu-west-1b
-  #           - eu-west-1c
-  #     preferredDuringSchedulingIgnoredDuringExecution:
-  #     - weight: 1
-  #       preference:
-  #         matchExpressions:
-  #         - key: node.kubernetes.io/instance-type
-  #           operator: In
-  #           values:
-  #           - t3.large
-  containers:
-  - name: redis
-    image: redis:latest
 ---
 kind: Service 
 apiVersion: v1 
@@ -154,12 +52,7 @@ metadata:
   name: hudson-srv
 spec:
   selector:
-    app: spring-music 
-  # type: LoadBalancer  
-  # ports:    
-  #   - protocol: TCP
-  #     port: 80
-  #     targetPort: 80
+    app: animal
   type: NodePort
   ports:
     - port: 80
