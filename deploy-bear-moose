@@ -57,7 +57,7 @@ spec:
   ports:
     - port: 80
       nodePort: 31111
-      targetPort: 80
+      targetPort: 8080
       protocol: TCP
       name: http-web
   # type: LoadBalancer 
