@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: ui
+    tier: frontend
+spec:
+  # here we select the number of pods we wish to start and the selector that tells our replica set which pods it needs 
+  #  to manage
+  replicas: 2
+  selector:  # Using the selector we tell our replicaset which pods to manage
+    matchLabels:
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        tier: frontend
+      name: cuda-test
+    spec:
+      containers:
+        - name: cuda-test
+          image: "yanivomc/spring-music:latest"     
+          volumeMounts:
+          - mountPath: "/var/www/html"
+            name: pod-volume-html
+      volumes:
+      - name: pod-volume-html
+        persistentVolumeClaim:
+          claimName: jb-claim
+
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: slow-io
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: io1
+  iopsPerGB: "4"
+  fsType: ext4
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+ name: jb-claim
+ annotations:
+   volume.beta.kubernetes.io/storage-class: "slow-io"
+spec:
+ accessModes:
+   - ReadWriteOnce
+ resources:
+   requests:
+     storage: 4Gi
