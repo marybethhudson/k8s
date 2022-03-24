@@ -1,9 +1,9 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: slow-io
+  name: fast-io
 provisioner: kubernetes.io/aws-ebs
 parameters:
   type: io1
-  iopsPerGB: "10"
+  iopsPerGB: "4"
   fsType: ext4
