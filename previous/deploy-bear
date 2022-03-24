@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: springmusic
-          image: "supergiantkir/animals:bear"
+          image: supergiantkir/animals:bear
       #affinity:
         #nodeAffinity:
           #requiredDuringSchedulingIgnoredDuringExecution:
