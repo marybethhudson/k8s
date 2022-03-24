@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bear-deploy
+spec:
+  selector:
+    matchLabels:
+      app: hudson
+  replicas: 1 
+  template: 
+    metadata:
+      labels:
+        app: hudson
+    spec:
+      containers:
+      - name: bear
+        image: supergiantkir/animals:bear
+        ports:
+        - containerPort: 80
