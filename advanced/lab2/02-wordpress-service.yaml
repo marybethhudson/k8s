@@ -1,16 +1,3 @@
-#### GENERATE PASS:
-####   echo -n "password" | base64
-
-apiVersion: v1
-kind: Secret
-metadata:
-  name: wordpress-secrets
-type: Opaque
-data:
-  db-password: cGFzc3dvcmQ=
-
----
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -23,17 +10,3 @@ spec:
   selector:
     app: wordpress
   type: LoadBalancer
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: wordpress-mysql
-  labels:
-    app: mysql
-spec:
-  ports:
-    - port: 3306
-  selector:
-    app: mysql
