@@ -3,8 +3,7 @@ kind: ConfigMap
 metadata:
   name: nginx
 data:
-  #GIT_URL: https://github.com/zinneranast/k8s-devops.git
-  GIT_URL: https://raw.githubusercontent.com/marybethhudson/k8s/main/textfile.txt
+  GIT_URL: https://github.com/marybethhudson/k8s.git
 
 ---
 apiVersion: apps/v1
