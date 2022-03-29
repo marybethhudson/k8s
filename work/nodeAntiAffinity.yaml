@@ -7,15 +7,6 @@ metadata:
     app: spring-music
 spec:
   affinity:
-#     podAffinity:
-#       requiredDuringSchedulingIgnoredDuringExecution:
-#       - labelSelector:
-#           matchExpressions:
-#           - key: cache
-#             operator: In
-#             values:
-#             - redis
-#         topologyKey: topology.kubernetes.io/zone
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
       - labelSelector:
@@ -24,7 +15,6 @@ spec:
               operator: In
               values:
               - spring-music
-#         topologyKey: topology.kubernetes.io/zone
   containers:
     - name: spring-music
       image: "yanivomc/spring-music:latest"
@@ -40,24 +30,6 @@ metadata:
     cache: redis
     app: redis-loaded
 spec:
-#   affinity:
-#     nodeAffinity:
-#       requiredDuringSchedulingIgnoredDuringExecution:
-#         nodeSelectorTerms:
-#         - matchExpressions:
-#           - key: topology.kubernetes.io/zone
-#             operator: In
-#             values:
-#             - eu-west-1b
-#             - eu-west-1c
-#       preferredDuringSchedulingIgnoredDuringExecution:
-#       - weight: 1
-#         preference:
-#           matchExpressions:
-#           - key: node.kubernetes.io/instance-type
-#             operator: In
-#             values:
-#             - t3.large
     nodeAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
       - labelSelector:
