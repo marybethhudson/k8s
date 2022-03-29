@@ -42,6 +42,13 @@ spec:
       containers:
         - name: redis
           image: redis:latest
+          volumeMounts:
+          - name: hands-on-persistent-storage
+            mountPath: /storage
+      volumes:
+      - name: hands-on-persistent-storage
+         hostPath:
+           path: /tmp/files           
 
 ---
 # place spring-music on a pod where there is a redis but not another spring-music
@@ -88,7 +95,14 @@ spec:
                   - spring-music
       containers:
         - name: spring-music
-          image: "yanivomc/spring-music:latest"    
+          image: "yanivomc/spring-music:latest"  
+          volumeMounts:
+          - name: hands-on-persistent-storage
+            mountPath: /storage
+       volumes:
+       - name: hands-on-persistent-storage
+         hostPath:
+           path: /tmp/files          
     
 # # original pod 
 # apiVersion: v1
@@ -111,4 +125,19 @@ spec:
 #     - name: spring-music
 #       image: "yanivomc/spring-music:latest"
 
-
+# # sample with volumes
+#   containers:
+#   - name: animals
+#     image: supergiantkir/animals:bear
+#     volumeMounts:
+#     - name: hands-on-persistent-storage
+#       mountPath: /storage
+#   - name: springapp
+#     image: yanivomc/spring-music:latest
+#     volumeMounts:
+#     - name: hands-on-persistent-storage
+#       mountPath: /storage
+#   volumes:
+#   - name: hands-on-persistent-storage
+#     hostPath:
+#       path: /tmp/files
