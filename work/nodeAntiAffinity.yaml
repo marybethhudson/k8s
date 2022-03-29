@@ -1,4 +1,51 @@
 # JIRA Ticket https://jira.cec.lab.emc.com/browse/CT-602
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-cache
+  labels:
+    cache: redis
+    app: redis-loaded
+spec:
+  # here we select the number of pods we wish to start and the selector that tells our replica set which pods it needs
+  #  to manage
+  replicas: 3  # does this put 3 replicas on 3 different nodes because of nodeAntiAffinity in pod spec below?
+  selector:  # Using the selector we tell our replicaset which pods to manage
+    matchLabels:
+      cache: redis
+      app: redis-loaded
+  template:   # here we define our PODS Specs (k8s uses go template in the background)
+    metadata:
+      labels:
+        cache: redis
+        app: redis-loaded
+    spec:
+      affinity:
+        nodeAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - redis-loaded
+# what is the difference between doing it at node or pod AntiAffiniy level? If it is at node then is pod redundant?
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - redis-loaded
+      containers:
+        - name: redis
+          image: redis:latest
+
+---
+# place spring music where there is a redis but not another spring-music
+# make it a deployment if more than one pod
 apiVersion: v1
 kind: Pod
 metadata:
@@ -19,25 +66,4 @@ spec:
     - name: spring-music
       image: "yanivomc/spring-music:latest"
 
----
 
-## THIS will start a redis pod as part of the example and affinity rule above
-apiVersion: v1
-kind: Pod
-metadata:
-  name: redis-cache
-  labels:
-    cache: redis
-    app: redis-loaded
-spec:
-    nodeAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-            matchExpressions:
-            - key: app
-              operator: In
-              values:
-              - redis-loaded            
-  containers:
-  - name: redis
-    image: redis:latest
