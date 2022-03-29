@@ -44,26 +44,71 @@ spec:
           image: redis:latest
 
 ---
-# place spring music where there is a redis but not another spring-music
-# make it a deployment if more than one pod
-apiVersion: v1
-kind: Pod
+# place spring-music on a pod where there is a redis but not another spring-music
+#
+# I am currently not using label redis: cache in case we need it for something else.
+# I use label redis-loaded for nodeAntiAffinity to be sure just one redis on a node
+# if I have podAffninity and podAntiAffinity then I don't need nodeAffinity and nodeAntiAffinity in this deployment
+# because redis nodeAnitAffinity gets redis distributed across nodes and the spring-music app uses podAffinity and AntiAffinity 
+# to find a pod with redis, but not one where application spring-music is already running
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: spring-music
-  labels:  # added this - is it necessary?
-    app: spring-music
+  labels:
+    app2: spring-music
 spec:
-  affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-            matchExpressions:
-            - key: app
-              operator: In
-              values:
-              - spring-music
-  containers:
-    - name: spring-music
-      image: "yanivomc/spring-music:latest"
+  replicas: 3  # does this put 3 replicas on nodes with redis because of podAffinity in pod spec below?
+  selector:  # Using the selector we tell our replicaset which pods to manage
+    matchLabels:
+      cache: redis
+      app: redis-loaded
+      app2: spring-music
+  template:
+    metadata: # added this - is it necessary?
+      labels: 
+        app2: spring-music
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - redis-loaded      
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+                matchExpressions:
+                - key: app2
+                  operator: In
+                  values:
+                  - spring-music
+      containers:
+        - name: spring-music
+          image: "yanivomc/spring-music:latest"    
+    
+# # original pod 
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: spring-music
+#   labels:  # added this - is it necessary?
+#     app: spring-music
+# spec:
+#   affinity:
+#     podAntiAffinity:
+#       requiredDuringSchedulingIgnoredDuringExecution:
+#       - labelSelector:
+#             matchExpressions:
+#             - key: app
+#               operator: In
+#               values:
+#               - spring-music
+#   containers:
+#     - name: spring-music
+#       image: "yanivomc/spring-music:latest"
 
 
