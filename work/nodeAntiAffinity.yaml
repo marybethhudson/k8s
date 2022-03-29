@@ -1,26 +1,29 @@
+# JIRA Ticket https://jira.cec.lab.emc.com/browse/CT-602
 apiVersion: v1
 kind: Pod
 metadata:
   name: spring-music
+  labels:  # added this - is it necessary?
+    app: spring-music
 spec:
   affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: topology.kubernetes.io/zone
-            operator: In
-            values:
-            - eu-west-1b
-            - eu-west-1c
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 1
-        preference:
-          matchExpressions:
-          - key: node.kubernetes.io/instance-type
-            operator: In
-            values:
-            - t3.large
+#     nodeAffinity:
+#       requiredDuringSchedulingIgnoredDuringExecution:
+#         nodeSelectorTerms:
+#         - matchExpressions:
+#           - key: topology.kubernetes.io/zone
+#             operator: In
+#             values:
+#             - eu-west-1b
+#             - eu-west-1c
+#       preferredDuringSchedulingIgnoredDuringExecution:
+#       - weight: 1
+#         preference:
+#           matchExpressions:
+#           - key: node.kubernetes.io/instance-type
+#             operator: In
+#             values:
+#             - t3.large
     podAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
       - labelSelector:
@@ -52,25 +55,34 @@ metadata:
   name: redis-cache
   labels:
     cache: redis
+    app: redis-loaded
 spec:
-  affinity:
-    nodeAffinity:
+#   affinity:
+#     nodeAffinity:
+#       requiredDuringSchedulingIgnoredDuringExecution:
+#         nodeSelectorTerms:
+#         - matchExpressions:
+#           - key: topology.kubernetes.io/zone
+#             operator: In
+#             values:
+#             - eu-west-1b
+#             - eu-west-1c
+#       preferredDuringSchedulingIgnoredDuringExecution:
+#       - weight: 1
+#         preference:
+#           matchExpressions:
+#           - key: node.kubernetes.io/instance-type
+#             operator: In
+#             values:
+#             - t3.large
+    nodeAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: topology.kubernetes.io/zone
-            operator: In
-            values:
-            - eu-west-1b
-            - eu-west-1c
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 1
-        preference:
-          matchExpressions:
-          - key: node.kubernetes.io/instance-type
-            operator: In
-            values:
-            - t3.large
+      - labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - redis-loaded            
   containers:
   - name: redis
     image: redis:latest
