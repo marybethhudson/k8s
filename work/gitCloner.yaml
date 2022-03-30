@@ -1,3 +1,4 @@
+# From https://computingforgeeks.com/perform-git-clone-in-kubernetes-pod-deployment/
 apiVersion: v1
 kind: Pod
 metadata:
