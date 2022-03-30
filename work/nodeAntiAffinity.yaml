@@ -103,41 +103,27 @@ spec:
        - name: hands-on-persistent-storage
          hostPath:
            path: /tmp/files          
-    
-# # original pod 
+---
+# Not sure what specs to use for local storage... and then point to this local storage
 # apiVersion: v1
-# kind: Pod
+# kind: PersistentVolume
 # metadata:
-#   name: spring-music
-#   labels:  # added this - is it necessary?
-#     app: spring-music
+#   name: example-pv
 # spec:
-#   affinity:
-#     podAntiAffinity:
-#       requiredDuringSchedulingIgnoredDuringExecution:
-#       - labelSelector:
-#             matchExpressions:
-#             - key: app
-#               operator: In
-#               values:
-#               - spring-music
-#   containers:
-#     - name: spring-music
-#       image: "yanivomc/spring-music:latest"
-
-# # sample with volumes
-#   containers:
-#   - name: animals
-#     image: supergiantkir/animals:bear
-#     volumeMounts:
-#     - name: hands-on-persistent-storage
-#       mountPath: /storage
-#   - name: springapp
-#     image: yanivomc/spring-music:latest
-#     volumeMounts:
-#     - name: hands-on-persistent-storage
-#       mountPath: /storage
-#   volumes:
-#   - name: hands-on-persistent-storage
-#     hostPath:
-#       path: /tmp/files
+#   capacity:
+#     storage: 100Gi
+#   volumeMode: Filesystem
+#   accessModes:
+#   - ReadWriteOnce
+#   persistentVolumeReclaimPolicy: Delete
+#   storageClassName: local-storage
+#   local:
+#     path: /mnt/disks/ssd1
+#   nodeAffinity:
+#     required:
+#       nodeSelectorTerms:
+#       - matchExpressions:
+#         - key: kubernetes.io/hostname
+#           operator: In
+#           values:
+#           - example-node
