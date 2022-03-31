@@ -1,0 +1,129 @@
+# JIRA Ticket https://jira.cec.lab.emc.com/browse/CT-602
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-cache
+  labels:
+    cache: redis
+    app: redis-loaded
+spec:
+  # here we select the number of pods we wish to start and the selector that tells our replica set which pods it needs
+  #  to manage
+  replicas: 3  # does this put 3 replicas on 3 different nodes because of nodeAntiAffinity in pod spec below?
+  selector:  # Using the selector we tell our replicaset which pods to manage
+    matchLabels:
+      cache: redis
+      app: redis-loaded
+  template:   # here we define our PODS Specs (k8s uses go template in the background)
+    metadata:
+      labels:
+        cache: redis
+        app: redis-loaded
+    spec:
+      affinity:
+        nodeAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - redis-loaded
+# what is the difference between doing it at node or pod AntiAffiniy level? If it is at node then is pod redundant?
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - redis-loaded
+      containers:
+        - name: redis
+          image: redis:latest
+          volumeMounts:
+          - name: hands-on-persistent-storage
+            mountPath: /storage
+      volumes:
+      - name: hands-on-persistent-storage
+         hostPath:
+           path: /tmp/files           
+
+---
+# place spring-music on a pod where there is a redis but not another spring-music
+#
+# I am currently not using label redis: cache in case we need it for something else.
+# I use label redis-loaded for nodeAntiAffinity to be sure just one redis on a node
+# if I have podAffninity and podAntiAffinity then I don't need nodeAffinity and nodeAntiAffinity in this deployment
+# because redis nodeAnitAffinity gets redis distributed across nodes and the spring-music app uses podAffinity and AntiAffinity 
+# to find a pod with redis, but not one where application spring-music is already running
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-music
+  labels:
+    app2: spring-music
+spec:
+  replicas: 3  # does this put 3 replicas on nodes with redis because of podAffinity in pod spec below?
+  selector:  # Using the selector we tell our replicaset which pods to manage
+    matchLabels:
+      cache: redis
+      app: redis-loaded
+      app2: spring-music
+  template:
+    metadata: # added this - is it necessary?
+      labels: 
+        app2: spring-music
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - redis-loaded      
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+                matchExpressions:
+                - key: app2
+                  operator: In
+                  values:
+                  - spring-music
+      containers:
+        - name: spring-music
+          image: "yanivomc/spring-music:latest"  
+          volumeMounts:
+          - name: hands-on-persistent-storage
+            mountPath: /storage
+       volumes:
+       - name: hands-on-persistent-storage
+         hostPath:
+           path: /tmp/files          
+---
+# Not sure what specs to use for local storage... and then point to this local storage
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: example-pv
+# spec:
+#   capacity:
+#     storage: 100Gi
+#   volumeMode: Filesystem
+#   accessModes:
+#   - ReadWriteOnce
+#   persistentVolumeReclaimPolicy: Delete
+#   storageClassName: local-storage
+#   local:
+#     path: /mnt/disks/ssd1
+#   nodeAffinity:
+#     required:
+#       nodeSelectorTerms:
+#       - matchExpressions:
+#         - key: kubernetes.io/hostname
+#           operator: In
+#           values:
+#           - example-node
